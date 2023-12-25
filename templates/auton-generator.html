@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Auton Generator</title>
+</head>
+<body>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/all.css') }}">
+  <script src="{{ url_for('static', filename='js/jquery-3.6.3.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/socket.io.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/lodash.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
+  <style>
+    .vertical-slider {
+      height: 480px;
+      width: 40px;
+      padding-top: 40px;
+      padding-bottom: 40px;
+     }
+     
+    .slider-div {
+      height: 480px;
+      width: 40px;
+      position: relative;
+      display: inline-block;
+    }
+
+    .side-by-side {
+      text-align: center;
+    }
+
+    .centered {
+      display: flex;
+      align-items: center;
+      justify-content: center;  
+    }
+
+    .dot {
+      height: 10px;
+      width: 10px;
+      position: absolute;
+      background-color: #dc8605;
+      border-radius: 50%;
+    }
+
+  </style>
+  <div class="text-center">
+    <div class="jumbotron">
+      <h1 id="header">Auton Generator</h1>
+    </div>
+    <div class="dropdown">
+      <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        Auton List
+      </button>
+      <div class="dropdown-menu" id="auton-list">
+        <a class="dropdown-item" href="#"><i class="fa fa-plus"></i>New Auton</a>
+      </div>
+    </div>
+    <br>
+    <div class="dropdown">
+      <button id="auton-steps-button" class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" hidden>
+        Auton Steps
+      </button>
+      <div class="dropdown-menu" id="auton-steps"></div>
+    </div>
+    <br>
+    <button id="load-button" class="btn btn-primary">Load Autons From Robot</button>
+    <br>
+    <br>
+    <div id="old-path-switch-div" class="form-check form-switch centered" hidden>
+      <input class="form-check-input" type="checkbox" role="switch" id="old-path-switch">
+      <label class="form-check-label" for="old-path-switch">Path View</label>
+    </div>
+    <div class="side-by-side">
+      <div class="slider-div">
+        <label class="form-label text-center" position="absolute">Spacing</label>
+        <input id="spacing-slider" min="3" max="12" step="0.5" type="range" class="form-range vertical-slider" orient="vertical" position="relative">
+        <label id="spacing-label" class="form-label text-center" position="absolute"></label>
+      </div>
+      <canvas id="field" width="480" height="480" position="absolute"></canvas>
+      <div id="point-div" hidden>
+        <div id="point-container"></div>
+        <div class="form-group centered">
+          <input id="point-x-input" type="text" class="form-control w-25" placeholder="X-Coordinate (in.)">
+          <input id="point-y-input" type="text" class="form-control w-25" placeholder="Y-Coordinate (in.)">
+        </div>
+        <br>
+        <div class="form-check centered">
+          <input class="form-check-input" type="checkbox" value="" id="async-input">
+          <label class="form-check-label" for="async-input">
+            Async?
+          </label>
+        </div>
+      </div>
+      <div id="robot-div" hidden>
+        <img id="robot">
+        <div id="robot-coordinate-inputs" class="form-group centered" position="relative">
+          <input id="robot-x-input" type="text" class="form-control w-25" placeholder="X-Coordinate (in.)">
+          <input id="robot-y-input" type="text" class="form-control w-25" placeholder="Y-Coordinate (in.)">
+        </div>
+        <div id="heading-div" class="centered" hidden>
+          <input id="heading-range" step="0.01" type="range" class="form-range w-50" position="relative">
+          <input id="heading-input" type="text" class="form-control w-25" placeholder="Heading (deg)">
+        </div>
+      </div>
+      <div class="slider-div">
+        <label class="form-label text-center" position="absolute">Smoothing</label>
+        <input id="smoothing-slider" min="0" max="0.98" step="0.01" type="range" class="form-range vertical-slider" orient="vertical" position="relative">
+        <label id="smoothing-label" class="form-label text-center" position="absolute"></label>
+      </div>
+    </div>
+    <br>
+    <div id="path-inputs" hidden>
+      <div id="ramsete-inputs" hidden>
+        <div class="centered">
+          <label for="intensity-slider" class="form-label">Intensity</label>
+          <input id="intensity-slider" min="0.1" max="0.5" step="0.1" type="range" class="form-range w-25" position="relative">
+        </div>
+        <br>
+        <div class="centered">
+          <input id="angle" type="text" class="form-control w-25" placeholder="Angle at Point" disabled>
+          <input id="linear-velocity" type="text" class="form-control w-25" placeholder="Desired Linear Velocity" disabled>
+          <input id="angular-velocity" type="text" class="form-control w-25" placeholder="Desired Angular Velocity" disabled>
+        </div>
+        <br>
+      </div>
+      <div id="coordinate-inputs" class="form-group centered" position="relative">
+        <input id="x-input" type="text" class="form-control w-25" placeholder="X-Coordinate (in.)">
+        <input id="y-input" type="text" class="form-control w-25" placeholder="Y-Coordinate (in.)">
+      </div>
+      <br>
+      <div id="points" position="absolute" hidden></div>
+      <div id="point-inputs"></div>
+      <br>
+      <div id="lookahead-inputs" class="form-group centered" position="relative" hidden>
+        <input id="min-lookahead-input" type="text" class="form-control w-25" placeholder="Minimum Lookahead">
+        <input id="max-lookahead-input" type="text" class="form-control w-25" placeholder="Maximum Lookahead">
+      </div>
+      <br>
+      <div id="reversed" class="form-check centered" hidden>
+        <input class="form-check-input" type="checkbox" value="" id="reversed-input">
+        <label class="form-check-label" for="reversed-input">
+           Reversed?
+        </label>
+      </div>
+    </div>
+    <div class="text-center">
+      <button type="button" class="btn btn-primary" id="save-auton-file" disabled>Save Auton File</button>
+      <label class="btn btn-primary" id="load-auton-file">
+        Load Auton File
+        <input type="file" id="file-upload" hidden>
+      </label>
+    </div>
+  </div>
+  <script>
+    let field = document.querySelector("#field");
+
+    let ctx = field.getContext("2d");
+    ctx.strokeStyle = "#ff0000";
+    
+    let field_bg = new Image();
+    field_bg.src = "static/imgs/field.png";
+    
+    field_bg.onload = () => {
+        ctx.drawImage(field_bg, 0, 0);
+    }
+  </script>
+  <script src="{{ url_for('static', filename='js/auton-generator.js') }}"></script>
+</body>
+</html>

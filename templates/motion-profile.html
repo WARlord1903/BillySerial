@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Auton Replay</title>
+</head>
+<style>
+  .centered {
+      display: flex;
+      align-items: center;
+      justify-content: center;  
+    }
+</style>
+<body>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+  <script src="{{ url_for('static', filename='js/jquery-3.6.3.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/socket.io.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/lodash.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/chart.umd.js') }}"></script>
+  </style>
+  <div class="text-center">
+    <div class="jumbotron text-center">
+      <h1 id="header">Motion Profile Generator</h1>
+    </div>
+    <div class="dropdown">
+      <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        Templates
+      </button>
+      <div class="dropdown-menu" id="template-list">
+        <a class="dropdown-item" id="triangle" href="#">Triangle</a>
+        <a class="dropdown-item" id="trapezoid" href="#">Trapezoid</a>
+      </div>
+    </div>
+    <canvas id="chart" height="75%" position="relative"></canvas>
+    <div id="spacing" hidden>
+      <label for="spacing-range" class="form-label">Spacing</label>
+      <input id="spacing-range" value="0" step="5" type="range" class="form-range w-50" position="relative">
+    </div>
+    <br>
+    <div id="smoothing" hidden>
+      <label for="smoothing-range" class="form-label" value="5">Smoothing</label>
+      <input id="smoothing-range" value="0" step="0.01" min="0" max="0.98" type="range" class="form-range w-50" position="relative">
+    </div>
+    <div id="linear" hidden>
+      <label for="linear-range" class="form-label" value="5">Linear Modifier</label>
+      <input id="linear-range" value="0" step="0.01" min="0" max="1" type="range" class="form-range w-50" position="relative">
+    </div>
+    <br>
+    <div class="centered">
+      <input id="slope" type="text" class="form-control w-25" placeholder="Slope Time (ms)" hidden>
+      <input id="sustain" type="text" class="form-control w-25" placeholder="Peak Sustain Time (ms)" hidden>
+    </div>
+    <br>
+    <div class="centered">
+      <input id="start" type="text" class="form-control w-25" placeholder="Start Voltage (mV)" hidden>
+      <input id="end" type="text" class="form-control w-25" placeholder="End Voltage (mV)" hidden>
+      <input id="peak" type="text" class="form-control w-25" placeholder="Peak Voltage (mV)" hidden>
+      <br>
+    </div>
+    <button id="submit" class="btn btn-primary">Submit</button>
+  </div>
+  <script src="{{ url_for('static', filename='js/motion-profile.js') }}"></script>
+</body>
+</html>

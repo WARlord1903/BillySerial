@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Macro Editor</title>
+</head>
+<style>
+  #blocklyArea{
+    width: 100%;
+    height: 650px;
+  }
+
+  .centered {
+      display: flex;
+      align-items: center;
+      justify-content: center;  
+  }
+</style>
+<body>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/all.css') }}">
+  <script src="{{ url_for('static', filename='js/jquery-3.6.3.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/socket.io.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/blockly_compressed.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/blocks_compressed.js') }}"></script>
+  <script src="{{ url_for('static', filename='msg/en.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
+
+  <div class="centered">
+    <div class="dropdown">
+      <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        Macro List
+      </button>
+      <div class="dropdown-menu" id="macro-list">
+        <a class="dropdown-item" id="new" onClick="macro_select(this.id)" href="#"><i class="fa fa-plus"></i>New Macro</a>
+      </div>
+    </div>
+  </div>
+  
+  <div class="centered">
+    <div class="btn-group" role="group" aria-label="View Selector">
+      <button type="button" id="blockView" class="btn btn-secondary">Block View</button>
+      <button type="button" id="macroView" class="btn btn-secondary">Macro View</button>
+      <button type="button" id="fileView" class="btn btn-secondary">File View</button>
+    </div>
+  </div>
+
+  <div id="blocklyArea">
+    <div id="blocklyDiv" style="position: absolute;"></div>
+  </div>
+  
+  <div id="invisibleWorkspace" hidden></div>
+
+  <div id="macroDiv" hidden></div>
+  <div id="fileDiv" hidden></div>
+
+  <script src="{{ url_for('static', filename='js/macro-editor.js') }}"></script>
+</body>
+</html>

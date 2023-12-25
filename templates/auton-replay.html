@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Auton Replay</title>
+</head>
+<body>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+  <script src="{{ url_for('static', filename='js/jquery-3.6.3.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/socket.io.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
+  </style>
+  <div class="text-center">
+    <div class="jumbotron text-center">
+      <h1 id="header">Auton Replay</h1>
+    </div>
+    <canvas id="field" width="480" height="480" position="relative"></canvas>
+    <canvas id="robot" width="90" height="90" position="fixed"></canvas>
+    <br>
+    <div id="playbar" class="position-relative">
+      <img src="{{ url_for('static', filename='imgs/play.png') }}" alt="play-button" id="play-pause">
+      <input type="range" class="form-range w-75" id="timestamp" disabled>
+    </div>
+    <br>
+  </div>
+  <div id="diagnostics" position="relative"></div>
+  <div class="text-center">
+    <button type="button" class="btn btn-primary" id="load-auton">Load Last Auton</button>
+    <button type="button" class="btn btn-primary" id="live-auton">Live Auton View</button> 
+    <br>
+    <button type="button" class="btn btn-primary" id="save-auton-file" disabled>Save Auton File</button>
+    <label class="btn btn-primary" id="load-auton-file">
+      Load Auton File
+      <input type="file" id="file-upload" hidden>
+    </label>
+  </div>
+  <script>
+    let field = document.querySelector("#field");
+
+    let ctx = field.getContext("2d");
+    ctx.strokeStyle = "#ff0000";
+    
+    let field_bg = new Image();
+    field_bg.src = "static/imgs/field.png";
+    
+    field_bg.onload = () => {
+        ctx.drawImage(field_bg, 0, 0);
+    }
+
+    let robot = document.querySelector("#robot");
+
+    let robot_ctx = robot.getContext("2d");
+    robot_ctx.strokeStyle = "#0000ff";
+    
+    let robot_bg = new Image();
+    robot_bg.src = "static/imgs/robot_head.png";
+    
+    robot_bg.onload = () => {
+      robot_ctx.drawImage(robot_bg, 5, 25);
+    }
+  </script>
+  <script src="{{ url_for('static', filename='js/autonreplay.js') }}"></script>
+</body>
+</html>
